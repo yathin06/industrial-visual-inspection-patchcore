@@ -1,12 +1,17 @@
 # Dataset - external source, do not upload
 datasets/
 
-# Model checkpoints / trained model files
-models/
+# Generated images inside model output folders
+models/**/images/
+
+# Ignore model files by default
 *.ckpt
 *.pth
 *.pt
 *.onnx
+
+# Allow this trained PatchCore checkpoint
+!models/patchcore_metal_nut/Patchcore/MVTecAD/metal_nut/v1/weights/lightning/model.ckpt
 
 # Generated outputs
 outputs/
