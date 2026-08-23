@@ -1,0 +1,47 @@
+# Dataset - external source, do not upload
+datasets/
+
+# Model checkpoints / trained model files
+models/
+*.ckpt
+*.pth
+*.pt
+*.onnx
+
+# Generated outputs
+outputs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+visual_inspection_env/
+
+# Secrets / environment variables
+.env
+.env.*
+*.key
+*.pem
+
+# IDE files
+.vscode/
+.idea/
+
+# Windows/macOS temporary files
+Thumbs.db
+.DS_Store
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+.pytest_cache/
+
+# Generated PatchCore result images
+results/

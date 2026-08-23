@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-multipart
+requests
+torch
+torchvision
+anomalib
+opencv-python-headless
+pillow
+numpy
+pandas
+timm
+lightning

@@ -1,0 +1,10 @@
+visual_inspection_env
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.git
+.gitignore
+outputs/api_uploads
+outputs/heatmaps
+outputs/logs
