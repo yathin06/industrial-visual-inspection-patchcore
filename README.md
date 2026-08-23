@@ -88,7 +88,7 @@ The anomaly-detection model is then integrated into a small **production-style i
 
 ## 📊 Dashboard Preview
 
-![Industrial Visual Inspection Dashboard](docs/images/image1.png)
+![Industrial Visual Inspection Dashboard](docs/images/Image1.png)
 
 # 🚀 Key Features
 
