@@ -1,966 +1,536 @@
-\# Industrial Visual Inspection using PatchCore
+# 🔍 Industrial Visual Inspection with PatchCore
 
+### AI-Based Anomaly Detection for Manufacturing Quality Inspection
 
+An end-to-end industrial visual inspection prototype using **PatchCore**, **PyTorch**, **Anomalib**, **FastAPI**, **Streamlit**, and **Docker**.
 
-An end-to-end \*\*industrial visual anomaly detection system\*\* built using \*\*PatchCore, PyTorch, Anomalib, FastAPI, Streamlit, and Docker\*\*.
+The system analyzes product images, generates an **anomaly score**, and converts the result into a factory-style quality decision:
 
+| Decision       | Meaning                    |
+| -------------- | -------------------------- |
+| ✅ **OK**       | Part accepted              |
+| ⚠️ **Warning** | Manual inspection required |
+| ❌ **NG**       | Part rejected              |
 
+---
 
-The system analyzes product images, calculates an anomaly score using PatchCore, and converts the result into a factory-style inspection decision:
+## 🎯 Project Goal
 
+In manufacturing, collecting labelled examples of every possible defect is difficult.
 
+Instead of training a conventional classifier on many defect classes, this project uses **PatchCore anomaly detection**.
 
-\* \*\*OK\*\* — Part accepted
-
-\* \*\*Warning\*\* — Manual inspection required
-
-\* \*\*NG\*\* — Part rejected
-
-
-
-\---
-
-
-
-\## Project Overview
-
-
-
-Traditional supervised defect-detection systems usually require labelled examples of every defect type. In industrial manufacturing, however, collecting sufficient examples of all possible defects can be difficult.
-
-
-
-This project therefore uses \*\*PatchCore anomaly detection\*\*.
-
-
-
-PatchCore learns feature representations from \*\*normal product images\*\* and compares new images against the learned normal feature distribution. Images that differ significantly from the normal patterns receive a higher anomaly score.
-
-
-
-The anomaly-detection model is integrated into a small production-style inspection system containing:
-
-
-
-\* Dataset verification
-
-\* Image preprocessing
-
-\* PatchCore model training
-
-\* Single-image anomaly prediction
-
-\* Reusable inspection engine
-
-\* FastAPI inference service
-
-\* Streamlit monitoring dashboard
-
-\* Inspection counters and inspection history
-
-\* Production-stream simulation
-
-\* Camera/conveyor client
-
-\* Docker-based deployment
-
-
-
-\---
-
-
-
-\## System Architecture
-
-
+PatchCore learns the visual feature distribution of **normal components**. During inspection, a new image is compared against this learned representation.
 
 ```text
-
-Product Image
-
-&#x20;     │
-
-&#x20;     ▼
-
-Image Preprocessing
-
-&#x20;     │
-
-&#x20;     ▼
-
-PatchCore Model
-
-&#x20;     │
-
-&#x20;     ▼
-
+Normal Training Images
+        │
+        ▼
+Feature Extraction
+        │
+        ▼
+PatchCore Memory Bank
+        │
+        ▼
+New Product Image
+        │
+        ▼
 Anomaly Score
-
-&#x20;     │
-
-&#x20;     ▼
-
-Inspection Decision
-
-&#x20;     │
-
-&#x20;     ├── OK
-
-&#x20;     ├── Warning
-
-&#x20;     └── NG
-
-&#x20;     │
-
-&#x20;     ▼
-
-FastAPI Backend
-
-&#x20;     │
-
-&#x20;     ▼
-
-Inspection Counters / History
-
-&#x20;     │
-
-&#x20;     ▼
-
-Streamlit Dashboard
-
-```
-
-
-
-\---
-
-
-
-\## Technologies Used
-
-
-
-\* Python
-
-\* PyTorch
-
-\* Anomalib
-
-\* PatchCore
-
-\* FastAPI
-
-\* Streamlit
-
-\* Docker
-
-\* Docker Compose
-
-
-
-\---
-
-
-
-\## Project Structure
-
-
-
-```text
-
-industrial-visual-inspection-patchcore/
-
-│
-
-├── api/
-
-│   └── inspection\_api.py
-
-│
-
-├── app/
-
-│   └── dashboard.py
-
-│
-
-├── demo\_scripts/
-
-│   └── START\_VISUAL\_INSPECTION.bat
-
-│
-
-├── models/
-
-│   └── patchcore\_metal\_nut/
-
-│       └── Patchcore/
-
-│           └── MVTecAD/
-
-│               └── metal\_nut/
-
-│                   └── v1/
-
-│                       └── weights/
-
-│                           └── lightning/
-
-│                               └── model.ckpt
-
-│
-
-├── src/
-
-│   ├── 01\_check\_dataset.py
-
-│   ├── 02\_preprocess\_preview.py
-
-│   ├── 03\_train\_patchcore.py
-
-│   ├── 04\_predict\_single\_image.py
-
-│   ├── 05\_test\_inspection\_engine.py
-
-│   ├── 06\_test\_production\_stream.py
-
-│   ├── 07\_camera\_conveyor\_client.py
-
-│   └── inspection\_engine.py
-
-│
-
-├── Dockerfile
-
-├── Dockerfile.dashboard
-
-├── docker-compose.yml
-
-├── requirements.txt
-
-├── requirements-dashboard.txt
-
-├── .dockerignore
-
-├── .gitignore
-
-└── README.md
-
-```
-
-
-
-\---
-
-
-
-\## Project Workflow
-
-
-
-\### 1. Dataset Verification
-
-
-
-```text
-
-src/01\_check\_dataset.py
-
-```
-
-
-
-Checks the dataset structure and verifies that the required image folders are available before preprocessing and training.
-
-
-
-\---
-
-
-
-\### 2. Preprocessing Preview
-
-
-
-```text
-
-src/02\_preprocess\_preview.py
-
-```
-
-
-
-Used to inspect the image preprocessing pipeline before model training.
-
-
-
-This helps verify that the images are being loaded and transformed correctly before they are provided to PatchCore.
-
-
-
-\---
-
-
-
-\### 3. PatchCore Training
-
-
-
-```text
-
-src/03\_train\_patchcore.py
-
-```
-
-
-
-Trains the PatchCore anomaly-detection model using normal product images.
-
-
-
-Instead of directly learning defect classes, PatchCore builds a representation of normal visual features that can later be used to detect deviations.
-
-
-
-\---
-
-
-
-\### 4. Single-Image Prediction
-
-
-
-```text
-
-src/04\_predict\_single\_image.py
-
-```
-
-
-
-Loads the trained PatchCore model and performs anomaly prediction on an individual image.
-
-
-
-The model produces an anomaly score that represents how strongly the input differs from the learned normal-product representation.
-
-
-
-\---
-
-
-
-\### 5. Inspection Engine
-
-
-
-```text
-
-src/inspection\_engine.py
-
-```
-
-
-
-Provides reusable inference logic for production-style inspection.
-
-
-
-The PatchCore model is loaded once and can then be used repeatedly for multiple incoming images.
-
-
-
-The model output is converted into an inspection decision:
-
-
-
-```text
-
-Input Image
-
-&#x20;    │
-
-&#x20;    ▼
-
-PatchCore
-
-&#x20;    │
-
-&#x20;    ▼
-
-Anomaly Score
-
-&#x20;    │
-
-&#x20;    ▼
-
+        │
+        ▼
 OK / Warning / NG
-
 ```
 
+The anomaly-detection model is then integrated into a small **production-style inspection architecture** with an API, dashboard, Docker deployment, and simulated camera/conveyor workflow.
 
+---
 
-This separates the machine-learning inference logic from the API and user interface.
-
-
-
-\---
-
-
-
-\### 6. Inspection Engine Testing
-
-
+# ⚙️ System Architecture
 
 ```text
-
-src/05\_test\_inspection\_engine.py
-
+                ┌─────────────────────┐
+                │    Product Image    │
+                └──────────┬──────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │ Image Preprocessing │
+                └──────────┬──────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │   PatchCore Model   │
+                └──────────┬──────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │    Anomaly Score    │
+                └──────────┬──────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │ Inspection Decision │
+                │ OK / Warning / NG   │
+                └──────────┬──────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │    FastAPI API      │
+                └──────────┬──────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │ Streamlit Dashboard │
+                └─────────────────────┘
 ```
 
+---
 
+# 🚀 Key Features
 
-Tests the reusable inspection engine and verifies that images can be processed correctly using the trained model.
+* 🔍 **PatchCore-based anomaly detection**
+* 🧠 Normal-image feature learning and anomaly scoring
+* 🏭 Factory-style **OK / Warning / NG** decision logic
+* ⚡ Reusable inference engine
+* 🌐 **FastAPI** REST backend
+* 📊 **Streamlit** monitoring dashboard
+* 📈 Inspection counters and recent inspection history
+* 🎥 Camera/conveyor-style inspection client
+* 🔄 Production-stream simulation
+* 🐳 **Docker & Docker Compose** deployment
+* 💾 Pretrained PatchCore checkpoint included
 
+---
 
+# 🛠️ Technology Stack
 
-\---
+| Area                  | Technology     |
+| --------------------- | -------------- |
+| Programming           | Python         |
+| Deep Learning         | PyTorch        |
+| Anomaly Detection     | PatchCore      |
+| Framework             | Anomalib       |
+| Backend API           | FastAPI        |
+| Dashboard             | Streamlit      |
+| Containerization      | Docker         |
+| Service Orchestration | Docker Compose |
 
+---
 
-
-\### 7. Production Stream Simulation
-
-
+# 📁 Project Structure
 
 ```text
-
-src/06\_test\_production\_stream.py
-
+industrial-visual-inspection-patchcore/
+│
+├── api/
+│   └── inspection_api.py
+│
+├── app/
+│   └── dashboard.py
+│
+├── demo_scripts/
+│   └── START_VISUAL_INSPECTION.bat
+│
+├── models/
+│   └── patchcore_metal_nut/
+│       └── Patchcore/
+│           └── MVTecAD/
+│               └── metal_nut/
+│                   └── v1/
+│                       └── weights/
+│                           └── lightning/
+│                               └── model.ckpt
+│
+├── src/
+│   ├── 01_check_dataset.py
+│   ├── 02_preprocess_preview.py
+│   ├── 03_train_patchcore.py
+│   ├── 04_predict_single_image.py
+│   ├── 05_test_inspection_engine.py
+│   ├── 06_test_production_stream.py
+│   ├── 07_camera_conveyor_client.py
+│   └── inspection_engine.py
+│
+├── Dockerfile
+├── Dockerfile.dashboard
+├── docker-compose.yml
+├── requirements.txt
+├── requirements-dashboard.txt
+├── .dockerignore
+├── .gitignore
+└── README.md
 ```
 
+---
 
+# 🔄 Inspection Workflow
 
-Simulates repeated image inspection to represent a simple production-line workflow.
-
-
-
-Instead of loading the model separately for every image, the inspection engine remains active and processes multiple incoming parts.
-
-
-
-\---
-
-
-
-\### 8. Camera / Conveyor Client
-
-
+## 1. Dataset Verification
 
 ```text
-
-src/07\_camera\_conveyor\_client.py
-
+src/01_check_dataset.py
 ```
 
+Checks the dataset structure before preprocessing and model development.
 
+---
 
-Provides a client-side workflow for camera/conveyor-style inspection.
-
-
-
-This represents how the system could later receive images continuously from an industrial camera or conveyor-based inspection station.
-
-
-
-\---
-
-
-
-\## FastAPI Backend
-
-
+## 2. Preprocessing Preview
 
 ```text
-
-api/inspection\_api.py
-
+src/02_preprocess_preview.py
 ```
 
+Verifies that images are loaded and transformed correctly before they are passed into the anomaly-detection pipeline.
 
+---
 
-The trained PatchCore inspection system is exposed through a \*\*FastAPI REST API\*\*.
-
-
-
-The API allows external applications or inspection clients to submit images for inference.
-
-
-
-The backend handles:
-
-
+## 3. PatchCore Model Development
 
 ```text
+src/03_train_patchcore.py
+```
 
+Uses normal component images to build the PatchCore representation of normal visual features.
+
+PatchCore does not require examples of every possible defect. Instead, anomalous components are identified based on their deviation from the learned normal feature distribution.
+
+---
+
+## 4. Single-Image Prediction
+
+```text
+src/04_predict_single_image.py
+```
+
+Loads the trained PatchCore checkpoint and evaluates an individual product image.
+
+The output contains an anomaly score representing how strongly the image differs from the normal reference distribution.
+
+---
+
+## 5. Reusable Inspection Engine
+
+```text
+src/inspection_engine.py
+```
+
+The inspection engine loads the PatchCore model once and keeps it available for repeated inspections.
+
+```text
+Image
+  │
+  ▼
+PatchCore Inference
+  │
+  ▼
+Anomaly Score
+  │
+  ▼
+Decision Logic
+  │
+  ├── OK
+  ├── Warning
+  └── NG
+```
+
+This avoids reloading the model for every incoming product image.
+
+---
+
+## 6. Inspection Engine Test
+
+```text
+src/05_test_inspection_engine.py
+```
+
+Verifies that the reusable inspection engine correctly loads the trained model and processes images.
+
+---
+
+## 7. Production Stream Simulation
+
+```text
+src/06_test_production_stream.py
+```
+
+Simulates repeated image inspection similar to products arriving sequentially on a manufacturing line.
+
+---
+
+## 8. Camera / Conveyor Client
+
+```text
+src/07_camera_conveyor_client.py
+```
+
+Represents a camera/conveyor-style inspection workflow where images can be continuously submitted to the inspection system.
+
+---
+
+# 🌐 FastAPI Backend
+
+```text
+api/inspection_api.py
+```
+
+The inspection pipeline is exposed through a **FastAPI REST service**.
+
+```text
+Inspection Client
+       │
+       ▼
 Image Request
-
-&#x20;     │
-
-&#x20;     ▼
-
+       │
+       ▼
+FastAPI
+       │
+       ▼
 Inspection Engine
-
-&#x20;     │
-
-&#x20;     ▼
-
-PatchCore Prediction
-
-&#x20;     │
-
-&#x20;     ▼
-
-Inspection Decision
-
-&#x20;     │
-
-&#x20;     ▼
-
+       │
+       ▼
+PatchCore
+       │
+       ▼
+Decision + Score
+       │
+       ▼
 API Response
-
 ```
 
+The API also maintains inspection statistics and recent inspection history for the dashboard.
 
+---
 
-The API also maintains inspection statistics and recent inspection history that can be consumed by the dashboard.
-
-
-
-\---
-
-
-
-\## Streamlit Dashboard
-
-
+# 📊 Streamlit Dashboard
 
 ```text
-
 app/dashboard.py
-
 ```
 
+The Streamlit interface converts the ML output into an operator-friendly inspection dashboard.
 
+It provides information such as:
 
-A \*\*Streamlit dashboard\*\* provides a visual interface for monitoring the inspection system.
+* Total inspected components
+* Accepted components
+* Warning cases
+* Rejected components
+* Current inspection status
+* Recent inspection history
 
+This demonstrates how an anomaly-detection model can be integrated into an **industrial decision-support interface** instead of remaining only as an offline ML script.
 
+---
 
-The dashboard is designed to display information such as:
+# 📦 Dataset
 
+The project was developed using the **MVTec AD `metal_nut` category**.
 
+The original dataset is **not included in this repository** because it was obtained from an external source and redistribution of the source images is intentionally avoided.
 
-\* Total inspected parts
-
-\* Accepted parts
-
-\* Warning cases
-
-\* Rejected parts
-
-\* Inspection status
-
-\* Recent inspection history
-
-
-
-This converts the machine-learning model into a more practical industrial decision-support interface.
-
-
-
-\---
-
-
-
-\## Dataset
-
-
-
-The project uses the \*\*MVTec AD dataset — `metal\_nut` category\*\* for development and testing.
-
-
-
-The original dataset is \*\*not included in this GitHub repository\*\*.
-
-
-
-The dataset was obtained from an external source, and redistribution of the original images is therefore intentionally avoided in this repository.
-
-
-
-Users who want to reproduce the training process should obtain the dataset from the original MVTec AD source and place it locally in the required dataset directory.
-
-
-
-Example local structure:
-
-
+For retraining, the dataset should be obtained from the original source and placed locally in:
 
 ```text
-
 datasets/
-
-└── metal\_nut/
-
-&#x20;   ├── train/
-
-&#x20;   ├── test/
-
-&#x20;   └── ground\_truth/
-
+└── metal_nut/
+    ├── train/
+    ├── test/
+    └── ground_truth/
 ```
 
+The entire `datasets/` directory is excluded through `.gitignore`.
 
+---
 
-The complete `datasets/` directory is excluded from Git tracking using `.gitignore`.
+# 🧠 Trained PatchCore Model
 
-
-
-\---
-
-
-
-\## Trained PatchCore Model
-
-
-
-The trained PatchCore checkpoint used by this project \*\*is included in the repository\*\*.
-
-
+A trained PatchCore checkpoint is included:
 
 ```text
-
 models/
-
-└── patchcore\_metal\_nut/
-
-&#x20;   └── Patchcore/
-
-&#x20;       └── MVTecAD/
-
-&#x20;           └── metal\_nut/
-
-&#x20;               └── v1/
-
-&#x20;                   └── weights/
-
-&#x20;                       └── lightning/
-
-&#x20;                           └── model.ckpt
-
+└── patchcore_metal_nut/
+    └── Patchcore/
+        └── MVTecAD/
+            └── metal_nut/
+                └── v1/
+                    └── weights/
+                        └── lightning/
+                            └── model.ckpt
 ```
 
-
-
-The checkpoint is approximately \*\*14 MB\*\*.
-
-
-
-Including the trained checkpoint allows the inference pipeline to be tested without requiring the model to be retrained first.
-
-
-
-\---
-
-
-
-\## Generated Results
-
-
-
-Generated prediction images and runtime output folders are intentionally not included in the repository.
-
-
-
-Examples include:
-
-
+Checkpoint size:
 
 ```text
-
-outputs/
-
-results/
-
-models/\*\*/images/
-
+≈ 14 MB
 ```
 
+Including the checkpoint allows the inference pipeline to be tested without rebuilding the PatchCore model from scratch.
 
+---
 
-These directories may contain generated anomaly visualizations or images derived from the external dataset.
+# 🖼️ Generated Results
 
+Generated prediction images and runtime outputs are intentionally excluded from Git tracking.
 
+```text
+outputs/
+results/
+models/**/images/
+```
 
-They are excluded using `.gitignore` and can be regenerated locally by running the training or inference pipeline.
+These folders may contain anomaly visualizations or images derived from the external dataset.
 
+They can be regenerated locally using the model and inference scripts.
 
+---
 
-\---
+# 🐳 Running with Docker
 
-
-
-\## Docker Deployment
-
-
-
-The project includes Docker configuration for containerized deployment.
-
-
-
-The system can be built and started using:
-
-
+Build and start the application:
 
 ```bash
-
 docker compose up --build
-
 ```
 
-
-
-Docker Compose runs the main components as separate services:
-
-
+Docker Compose runs the main services separately:
 
 ```text
-
-PatchCore / FastAPI Service
-
-&#x20;         │
-
-&#x20;         ▼
-
-&#x20;    REST API
-
-&#x20;         │
-
-&#x20;         ▼
-
-Streamlit Dashboard
-
+┌─────────────────────────┐
+│ PatchCore + FastAPI API │
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│   Streamlit Dashboard   │
+└─────────────────────────┘
 ```
 
+---
 
+# 📊 Dashboard Access
 
-\---
-
-
-
-\## Dashboard
-
-
-
-After starting the Docker containers, the Streamlit dashboard can be opened at:
-
-
+After the containers are running:
 
 ```text
-
 http://localhost:8501
-
 ```
 
+opens the Streamlit dashboard.
 
+---
 
-\---
+# ⚡ API Status
 
-
-
-\## API
-
-
-
-The FastAPI service runs locally and provides the inference backend.
-
-
-
-The API status can be checked at:
-
-
+The FastAPI service can be checked using:
 
 ```text
-
 http://127.0.0.1:8000/status
-
 ```
 
+The status endpoint provides the current inspection state and inspection counters.
 
+---
 
-The status endpoint can be used to inspect the current inspection counters and system state.
-
-
-
-\---
-
-
-
-\## Example Industrial Workflow
-
-
-
-A possible production implementation would work as follows:
-
-
+# 🏭 Example Industrial Use Case
 
 ```text
-
-Component arrives at inspection station
-
-&#x20;               │
-
-&#x20;               ▼
-
-Industrial camera captures image
-
-&#x20;               │
-
-&#x20;               ▼
-
-Image sent to FastAPI
-
-&#x20;               │
-
-&#x20;               ▼
-
-PatchCore analyzes image
-
-&#x20;               │
-
-&#x20;               ▼
-
-Anomaly score generated
-
-&#x20;               │
-
-&#x20;               ▼
-
-Inspection decision
-
-&#x20;      ┌────────┼────────┐
-
-&#x20;      ▼        ▼        ▼
-
-&#x20;     OK     Warning     NG
-
-&#x20;      │        │        │
-
-&#x20;      ▼        ▼        ▼
-
-&#x20;  Accept     Manual    Reject
-
-&#x20;             Check
-
-&#x20;               │
-
-&#x20;               ▼
-
-&#x20;       Dashboard Updated
-
+Component arrives
+        │
+        ▼
+Camera captures image
+        │
+        ▼
+Image sent to API
+        │
+        ▼
+PatchCore inference
+        │
+        ▼
+Anomaly score
+        │
+        ▼
+┌───────────┬─────────────┬───────────┐
+│    OK     │   Warning   │    NG     │
+│           │             │           │
+│  Accept   │ Manual Check│  Reject   │
+└───────────┴─────────────┴───────────┘
+        │
+        ▼
+Dashboard updated
 ```
 
+A future production implementation could connect the inspection result to a **PLC, conveyor controller, industrial camera, or automatic reject mechanism**.
 
+---
 
-\---
+# 🎯 What This Project Demonstrates
 
+This project demonstrates an end-to-end workflow covering:
 
+**Computer Vision**
 
-\## Current Scope
+* Image preprocessing
+* Visual feature extraction
+* Anomaly detection
 
+**Machine Learning**
 
+* PatchCore
+* Normal-feature representation
+* Anomaly scoring
+* Model inference
 
-This project demonstrates an end-to-end prototype for \*\*AI-based industrial visual inspection\*\*, including:
+**Software Engineering**
 
+* Modular Python architecture
+* REST API development
+* Dashboard development
 
+**Deployment**
 
-\* Anomaly detection
+* Docker
+* Docker Compose
+* API/dashboard separation
 
-\* PatchCore model training
+**Industrial Automation Concept**
 
-\* Model inference
+* Camera-based inspection
+* Conveyor inspection workflow
+* OK / NG decision logic
+* Potential PLC integration
 
-\* Factory-style decision logic
+---
 
-\* REST API integration
+# 🔮 Future Improvements
 
-\* Dashboard monitoring
+Possible extensions include:
 
-\* Production-stream simulation
+* 📷 Real industrial camera integration
+* ⚙️ PLC communication
+* 🏭 Conveyor synchronization
+* 🚨 Automatic reject mechanism
+* 🗄️ SQL inspection database
+* 🔢 Product/serial-number traceability
+* 📈 Long-term quality trend monitoring
+* 🧠 Model drift monitoring
+* ⚖️ Comparison with PaDiM, EfficientAD and STFPM
+* 💻 Industrial edge-device deployment
+* 🔄 Automated retraining pipeline
+* 🔗 MES integration
 
-\* Camera/conveyor integration concept
+---
 
-\* Dockerized deployment
+# ⚠️ Project Scope
 
+This repository is an **engineering prototype** demonstrating an AI-based industrial visual-inspection workflow.
 
+It has not been validated or certified as a production quality-control system.
 
-The project is intended as an engineering prototype and has not been validated as a certified production quality-control system.
+---
 
+# 👤 Author
 
-
-\---
-
-
-
-\## Future Improvements
-
-
-
-Possible future extensions include:
-
-
-
-\* Real industrial camera integration
-
-\* PLC communication
-
-\* Conveyor synchronization
-
-\* Hardware triggering
-
-\* Automatic reject mechanism
-
-\* Persistent SQL inspection database
-
-\* Traceability using component IDs
-
-\* Model-performance monitoring
-
-\* Additional anomaly-detection algorithms
-
-\* Comparison with PaDiM, EfficientAD, STFPM, or other models
-
-\* Edge-device deployment
-
-\* Automatic model retraining
-
-\* Manufacturing execution system integration
-
-
-
-\---
-
-
-
-\## Author
-
-
-
-\*\*Yathin\*\*
-
-
+**Yathin**
 
 Industrial AI · Machine Learning · Automation · Mechatronics
-
-
-
